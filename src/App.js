@@ -1,23 +1,43 @@
-import logo from './logo.svg';
 import './App.css';
+import supabase from './config/supabaseClient';
+import { useEffect, useState } from 'react';
+
+// Components
+import Title from './components/Title';
+import Form from './components/Form';
+import List from './components/List';
 
 function App() {
+  const [fetchError, setFetchError] = useState(null);
+  const [todos, setTodos] = useState(null);
+
+  useEffect(() => {
+    async function fetchTodos() {
+      const { data, error } = await supabase.from('todos').select();
+      if (error) {
+        setFetchError('Could not fetch the todos');
+        setTodos(null);
+        console.log(error);
+      }
+      if (data) {
+        setTodos(data);
+        setFetchError(null);
+      }
+    }
+    fetchTodos();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Title />
+
+      {fetchError && <p>{fetchError}</p>}
+      {todos && (
+        <div>
+          <Form todos={todos} setTodos={setTodos} />
+          <List todos={todos} setTodos={setTodos} />
+        </div>
+      )}
     </div>
   );
 }
