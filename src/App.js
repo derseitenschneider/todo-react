@@ -9,7 +9,7 @@ import List from './components/List';
 
 function App() {
   const [fetchError, setFetchError] = useState(null);
-  const [todos, setTodos] = useState(null);
+  const [todos, setTodos] = useState([]);
 
   useEffect(() => {
     async function fetchTodos() {
@@ -20,7 +20,9 @@ function App() {
         console.log(error);
       }
       if (data) {
-        setTodos(data);
+        const dataSorted = data.sort((a,b)=> { return +b.id - +a.id})
+       
+        setTodos(dataSorted);
         setFetchError(null);
       }
     }

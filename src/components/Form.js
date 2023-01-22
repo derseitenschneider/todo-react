@@ -15,7 +15,7 @@ function Form({ todos, setTodos }) {
     setFormError(null);
     setInput('');
 
-    setTodos([...todos, { todo: input }]);
+    setTodos([{ todo: input }, ...todos ]);
 
     const { data, error } = await supabase
       .from('todos')
@@ -28,7 +28,7 @@ function Form({ todos, setTodos }) {
     }
 
     if ({ data }) {
-      setTodos([...todos, ...data]);
+      setTodos([...data, ...todos ]);
       setFormError(null);
     }
   }
