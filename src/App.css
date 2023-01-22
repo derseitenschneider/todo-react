@@ -40,14 +40,36 @@ body {
 .todo-list {
   list-style: none;
   padding: 0;
+  margin-top: 6px;
+
+}
+
+input.todo-input {
+  display: block;
+  border: none;
+  width: 100%;
+  background-color: transparent;
+ 
+
+  font-size: 16px;
+}
+
+input.todo-input:focus{
+  outline: none;
 }
 
 .todo-item {
-  background-color: #e4e4e4ef;
-  padding: 12px 6px;
-  margin-bottom: 4px;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+}
+
+.todo-item .btn--delete{
+  opacity: 0;
+}
+
+.todo-item:hover .btn--delete{
+  opacity: 1
 }
 
 .todo-item.completed .list-content {

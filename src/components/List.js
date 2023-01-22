@@ -1,61 +1,71 @@
-import { useState } from 'react';
+
 import supabase from '../config/supabaseClient';
 
 function List({ todos, setTodos }) {
-  const [deleteError, setDeleteError] = useState(null);
+  // const [deleteError, setDeleteError] = useState(null);
 
-  async function handleDelete(e) {
-    const itemID = e.target.dataset.id;
-    const newTodosArr = todos.filter((todo) => todo.id !== +itemID);
-    setTodos([...newTodosArr]);
-    const { data, error } = await supabase
+async function handleInput(e) {
+  const tempTodos = [...todos];
+  const currentId = +e.target.dataset.id;
+ todos.find(todo => todo.id === currentId).todo = e.target.value
+  setTodos([...tempTodos]);
+
+  const { data, error } = await supabase
       .from('todos')
-      .delete()
-      .eq('id', itemID)
-      .select();
+      .update([{ 'todo': e.target.value }])
+      .match({'id': `${currentId}`});
 
     if (error) {
-      setDeleteError('Konnte nicht gelöscht werden. Bitte versuch es erneut');
-      return;
+      console.log(error);
     }
 
-    if (data) {
-      const newTodosArr = todos.filter((todo) => todo.id !== data[0].id);
-      setTodos([...newTodosArr]);
-    }
-  }
+}
 
-  async function handleComplete(e) {}
+const handleDelete = async (e) => {
+  const currentId = +e.target.dataset.id;
+  const tempTodos = todos.filter(todo => todo.id !== currentId);
+  setTodos([...tempTodos]);
+  const {data, error} = await supabase
+  .from('todos')
+  .delete()
+  .match({'id': currentId})
+}
+
+  // async function handleDelete(e) {
+  //   const itemID = e.target.dataset.id;
+  //   const newTodosArr = todos.filter((todo) => todo.id !== +itemID);
+  //   setTodos([...newTodosArr]);
+  //   const { data, error } = await supabase
+  //     .from('todos')
+  //     .delete()
+  //     .eq('id', itemID)
+  //     .select();
+
+  //   if (error) {
+  //     setDeleteError('Konnte nicht gelöscht werden. Bitte versuch es erneut');
+  //     return;
+  //   }
+
+  //   if (data) {
+  //     const newTodosArr = todos.filter((todo) => todo.id !== data[0].id);
+  //     setTodos([...newTodosArr]);
+  //   }
+  // }
+
+  // async function handleComplete(e) {}
 
   return (
     <div>
-      <ul className="todo-list">
-        {[...todos].reverse().map((todo) => (
-          <li
-            key={todo.id}
-            className={`todo-item ${todo.completed ? 'completed' : ''}`}
-          >
-            <div className="list-content"> {todo.todo}</div>
-
-            <div className="buttons">
-              <button
-                className="btn btn-complete"
-                data-id={todo.id}
-                onClick={handleComplete}
-              >
-                √
-              </button>
-              <button
-                className="btn btn-delete"
-                data-id={todo.id}
-                onClick={handleDelete}
-              >
-                x
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+     <div className="todo-list">
+      
+        {todos.map(todo => {
+         return <div className="todo-item">
+                  <input type="text" value={todo.todo} className="todo-input" key={todo.id} onChange={handleInput} data-id={todo.id}/>
+                  <div className="btn btn--delete" onClick={handleDelete} data-id={todo.id}>x</div>  
+                </div>
+        })}
+     
+     </div>
     </div>
   );
 }
